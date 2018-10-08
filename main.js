@@ -296,6 +296,7 @@ function defendRoom(roomName) {
     const cpuTme = Game.cpu.getUsed();
 
     let hostiles = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
+
     if (hostiles.length > 0) {
         let username = hostiles[0].owner.username;
         Game.notify(`Enemy (${username}) spotted in room ${roomName}`);
