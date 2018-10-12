@@ -12,8 +12,10 @@ module.exports = {
   run: (creep) => {
     // creep in destiny room
     if (creep.room.name === creep.memory.target) {
-        let status = creep.claimController(creep.room.controller);
-        console.log(status)
+        // let status = creep.claimController(creep.room.controller);
+        let status = creep.reserveController(creep.room.controller);
+
+        // console.log(status)
       if (status < 0) {
         creep.moveTo(creep.room.controller, PATH_STYLE);
       }

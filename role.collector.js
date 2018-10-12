@@ -38,7 +38,8 @@ module.exports = {
             }
 
             if (structure) {
-                if (creep.transfer(structure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+             
+                if (creep.transfer(structure, _.findKey(creep.carry)) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(structure, PATH_STYLE);
                 }
             } else {
@@ -46,25 +47,17 @@ module.exports = {
             }
         } else {
             let source = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
+            
             if (source) {
                 if (creep.pickup(source) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(source, PATH_STYLE);
                 }
             } else {
                 source = creep.pos.findClosestByPath(FIND_TOMBSTONES);
-                if (source) {
-                    let withdraw;
-                    if (source.store[RESOURCE_ENERGY] === 0) {
-                        for (let key in Object.keys(source.store)) {
-                            if (!(key === RESOURCE_ENERGY)) {
-                                withdraw = key;
-                                break;
-                            }
-                        }
-                    }
-                    if (creep.withdraw(source, withdraw) === ERR_NOT_IN_RANGE) {
+             
+        
+                if (source && creep.withdraw(source, _.findKey(source.store)) === ERR_NOT_IN_RANGE) {
                         creep.moveTo(source, PATH_STYLE);
-                    }
                 } else {
                     return false;
                 }

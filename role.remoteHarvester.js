@@ -22,38 +22,28 @@ module.exports = {
     // creep move to unload
     if (creep.memory.working === true) {
       // creep is in home room
-      if (true) {
-
         let structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-          filter: (s) =>
-            (s.structureType === STRUCTURE_SPAWN
-              || s.structureType === STRUCTURE_EXTENSION
-              || s.structureType === STRUCTURE_TOWER)
-            && s.energy < s.energyCapacity
+            filter: (s) =>
+                (s.structureType === STRUCTURE_SPAWN
+                    || s.structureType === STRUCTURE_EXTENSION
+                    || s.structureType === STRUCTURE_TOWER)
+                && s.energy < s.energyCapacity
         });
-
-        if(!structure){
-          structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-            filter: (s) => s.structureType === STRUCTURE_STORAGE
-          });
+        if (!structure) {
+            structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+                filter: (s) => s.structureType === STRUCTURE_STORAGE
+            });
         }
-
         if (structure) {
-          if (creep.transfer(structure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(structure, PATH_STYLE);
-          }
+            if (creep.transfer(structure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(structure, PATH_STYLE);
+            }
 
-          // creep not in home room
+            // creep not in home room
         } else {
-          let exit = creep.room.findExitTo(creep.memory.home);
-          creep.moveTo(creep.pos.findClosestByRange(exit),PATH_STYLE);
+            let exit = creep.room.findExitTo(creep.memory.home);
+            creep.moveTo(creep.pos.findClosestByRange(exit), PATH_STYLE);
         }
-
-        // creep move to source
-      } else {
-        Game.notify(`Never`);
-        creep.moveTo(Game.rooms[creep.memory.home].controller, PATH_STYLE);
-      }
     } else {
 
       // creep in destiny room
