@@ -1,4 +1,5 @@
 const PATH_STYLE = {
+    reusePath: 3,
     visualizePathStyle: {
         stroke: 'pink',
         lineStyle: 'solid',

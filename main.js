@@ -1,6 +1,8 @@
 require('./prototype.spawn')();
+const Miner = require('./role.miner');
+const Carrier = require('./role.carrier');
 const Harvester = require('./role.harvester');
-const remoteHarvester = require('./role.remoteHarvester');
+const rHarvester = require('./role.rHarvester');
 const Ugrader = require('./role.upgrader');
 const Builder = require('./role.builder');
 const Repairer = require('./role.repairer');
@@ -8,52 +10,61 @@ const WallRepairer = require('./role.wallRepairer');
 const Claimer = require('./role.claimer');
 const Collector = require('./role.collector');
 const Soldier = require('./role.soldier');
-const RemoteBuilder = require('./role.remoteBuilder');
-const RemoteDismantler = require('./role.remoteDismantler');
+const rBuilder = require('./role.rBuilder');
+const rDismantler = require('./role.rDismantler');
 
 
 module.exports.loop = () => {
 
-    /* Memory.stats['cpu.rooms.W52S45.harvesting'] = 0;
-     Memory.stats['cpu.rooms.W52S45.remoteHarvesting'] = 0;
-     Memory.stats['cpu.rooms.W52S45.upgrading'] = 0;
-     Memory.stats['cpu.rooms.W52S45.building'] = 0;
-     Memory.stats['cpu.rooms.W52S45.repairing'] = 0;
-     Memory.stats['cpu.rooms.W52S45.wallRepairing'] = 0;
-     Memory.stats['cpu.rooms.W52S45.claiming'] = 0;
-     Memory.stats['cpu.rooms.W52S45.collecting'] = 0;
-     Memory.stats['cpu.rooms.W52S45.patroling'] = 0;
-     Memory.stats['cpu.rooms.W52S45.remoteBuilding'] = 0;*/
+    if (Game.spawns.Spawn1) {
+        Game.spawns.Spawn1.memory.MIN_MINERS = 2;
+        Game.spawns.Spawn1.memory.MIN_CARRIERS = 2;
+        Game.spawns.Spawn1.memory.MIN_COLLECTORS = 1;
 
-    Game.spawns.Spawn1.memory.MIN_HARVESTERS = 2;
-    Game.spawns.Spawn1.memory.MIN_REMOTE_HARVESTERS = 2;
-    Game.spawns.Spawn1.memory.MIN_UPGRADERS = 1;
-    Game.spawns.Spawn1.memory.MIN_BUILDERS = 0;
-    Game.spawns.Spawn1.memory.MIN_REPAIRERS = 1;
-    Game.spawns.Spawn1.memory.MIN_WALL_REPAIRERS = 0;
-    Game.spawns.Spawn1.memory.MIN_COLLECTORS = 1;
-    Game.spawns.Spawn1.memory.MIN_SOLDIERS = 0;
-    Game.spawns.Spawn1.memory.MIN_REMOTE_BUILDERS = 0;
-    Game.spawns.Spawn1.memory.MIN_REMOTE_DISMANTLERS = 0;
+        Game.spawns.Spawn1.memory.MIN_HARVESTERS = 0;
+        Game.spawns.Spawn1.memory.MIN_REMOTE_HARVESTERS = 1;
 
-    Game.spawns.Spawn1.memory.SOLDIER_DEPLOY_LOCATION = 'W53S46';
-    Game.spawns.Spawn1.memory.REMOTE_HARVESTER_TARGET = 'W53S46';
-    Game.spawns.Spawn1.memory.REMOTE_DISMANTLER_TARGET = 'W53S46';
+        Game.spawns.Spawn1.memory.MIN_UPGRADERS = 2;
+        Game.spawns.Spawn1.memory.MIN_BUILDERS = 0;
+        Game.spawns.Spawn1.memory.MIN_REPAIRERS = 1;
 
-    Game.spawns.Spawn2.memory.MIN_HARVESTERS = 3;
-    Game.spawns.Spawn2.memory.MIN_REMOTE_HARVESTERS = 0;
-    Game.spawns.Spawn2.memory.MIN_REPAIRERS = 1;
-    Game.spawns.Spawn2.memory.MIN_UPGRADERS = 2;
-    Game.spawns.Spawn2.memory.MIN_BUILDERS = 0;
-    Game.spawns.Spawn2.memory.MIN_WALL_REPAIRERS = 0;
-    Game.spawns.Spawn2.memory.MIN_COLLECTORS = 1;
-    Game.spawns.Spawn2.memory.MIN_SOLDIERS = 0;
-    Game.spawns.Spawn2.memory.MIN_REMOTE_BUILDERS = 0;
-    Game.spawns.Spawn2.memory.MIN_REMOTE_DISMANTLERS = 0;
+        Game.spawns.Spawn1.memory.MIN_WALL_REPAIRERS = 0;
+        Game.spawns.Spawn1.memory.MIN_SOLDIERS = 0;
+        Game.spawns.Spawn1.memory.MIN_REMOTE_BUILDERS = 0;
+        Game.spawns.Spawn1.memory.MIN_REMOTE_DISMANTLERS = 0;
+
+        Game.spawns.Spawn1.memory.SOLDIER_DEPLOY_LOCATION = 'W16N21';
+        Game.spawns.Spawn1.memory.REMOTE_HARVESTER_TARGET = 'W18N21';
+        Game.spawns.Spawn1.memory.REMOTE_DISMANTLER_TARGET = 'W53S46';
+        Game.spawns.Spawn1.memory.REMOTE_BUILDER_TARGET = 'W16N21';
+    }
+
+    if (Game.spawns.Spawn2) {
+        Game.spawns.Spawn2.memory.MIN_MINERS = 2;
+        Game.spawns.Spawn2.memory.MIN_CARRIERS = 2;
+        Game.spawns.Spawn2.memory.MIN_COLLECTORS = 1;
+
+        Game.spawns.Spawn2.memory.MIN_HARVESTERS = 0;
+        Game.spawns.Spawn2.memory.MIN_REMOTE_HARVESTERS = 2;
+        Game.spawns.Spawn2.memory.MIN_UPGRADERS =  0;
+
+        Game.spawns.Spawn2.memory.MIN_BUILDERS = 2;
+        Game.spawns.Spawn2.memory.MIN_REPAIRERS = 1;
+        Game.spawns.Spawn2.memory.MIN_WALL_REPAIRERS = 0;
+
+        Game.spawns.Spawn2.memory.MIN_SOLDIERS = 0;
+        Game.spawns.Spawn2.memory.MIN_REMOTE_BUILDERS = 0;
+        Game.spawns.Spawn2.memory.MIN_REMOTE_DISMANTLERS = 0;
+
+        Game.spawns.Spawn2.memory.SOLDIER_DEPLOY_LOCATION = 'W16N21';
+        Game.spawns.Spawn2.memory.REMOTE_HARVESTER_TARGET = 'W16N22';
+        Game.spawns.Spawn2.memory.REMOTE_DISMANTLER_TARGET = 'W53S46';
+        Game.spawns.Spawn2.memory.REMOTE_BUILDER_TARGET = 'W16N21';
+    }
 
 
     // console.log(Game.spawns.Spawn1.createCreep(spawn.room.name, [WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,MOVE,CARRY], undefined, {role: 'builder', working: false}));
-    // console.log(Game.spawns.Spawn1.createCreep([CLAIM,MOVE], undefined, {role: 'claimer', home:'W53S45',target:'W53S46', working: false}));
+    //console.log(Game.spawns.Spawn1.createCreep([CLAIM,MOVE], undefined, {role: 'claimer', home:'W17N21',target:'W16N21', working: false}));
     Memory.temp = {cpu: {rooms: {}}};
 
 
@@ -98,66 +109,98 @@ function spawnCreeps(creepsSpawnedHere, spawn) {
 
     const cpuTime = Game.cpu.getUsed();
 
-    let totalHarvesters = _.sum(creepsSpawnedHere, (c) => {
+    let totalMiners = _.filter(creepsSpawnedHere, (c) => {
+        return c.memory.role === 'miner'
+    }).length;
+    
+    let totalCarriers = _.filter(creepsSpawnedHere, (c) => {
+        return c.memory.role === 'carrier'
+    }).length;
+
+    let totalHarvesters = _.filter(_.filter(creepsSpawnedHere, (c) => {
         return c.memory.role === 'harvester'
-    });
+    })).length;
 
-    let totalLongDistanceHarversters = _.sum(creepsSpawnedHere, (c) => {
-        return c.memory.role === 'remoteHarvester'
-    });
+    let totalrHarversters = _.filter(creepsSpawnedHere, (c) => {
+        return c.memory.role === 'rHarvester'
+    }).length;
 
-    let totalUpgraders = _.sum(creepsSpawnedHere, (c) => {
+    let totalUpgraders = _.filter(creepsSpawnedHere, (c) => {
         return c.memory.role === 'upgrader'
-    });
+    }).length;
 
-    let totalBuilders = _.sum(creepsSpawnedHere, (c) => {
+    let totalBuilders = _.filter(creepsSpawnedHere, (c) => {
         return c.memory.role === 'builder'
-    });
+    }).length;
 
-    let totalRepairers = _.sum(creepsSpawnedHere, (c) => {
+    let totalRepairers = _.filter(creepsSpawnedHere, (c) => {
         return c.memory.role === 'repairer'
-    });
+    }).length;
 
-    let totalWallRepairers = _.sum(creepsSpawnedHere, (c) => {
+    let totalWallRepairers = _.filter(creepsSpawnedHere, (c) => {
         return c.memory.role === 'wallRepairer'
-    });
+    }).length;
 
-    let totalCollectors = _.sum(creepsSpawnedHere, (c) => {
+    let totalCollectors = _.filter(creepsSpawnedHere, (c) => {
         return c.memory.role === 'collector'
-    });
+    }).length;
 
-    let totalSoldiers = _.sum(creepsSpawnedHere, (c) => {
+    let totalSoldiers = _.filter(creepsSpawnedHere, (c) => {
         return c.memory.role === 'soldier'
-    });
+    }).length;
 
-    let totalRemoteBuilders = _.sum(creepsSpawnedHere, (c) => {
-        return c.memory.role === 'remoteBuilder'
-    });
+    let totalrBuilders = _.filter(creepsSpawnedHere, (c) => {
+        return c.memory.role === 'rBuilder'
+    }).length;
 
-    let totalRemoteDismantlers = _.sum(creepsSpawnedHere, (c) => {
-        return c.memory.role === 'remoteDismantler'
-    });
+    let totalrDismantlers = _.filter(creepsSpawnedHere, (c) => {
+        return c.memory.role === 'rDismantler'
+    }).length;
+
+    // Memory.stats['rooms.' + spawn.room.name + '.storage.energy'] = spawn.room.storage.store[RESOURCE_ENERGY];
 
     Memory.stats['rooms.' + spawn.room.name + '.creeps.total'] = creepsSpawnedHere;
+    Memory.stats['rooms.' + spawn.room.name + '.creeps.miners'] = totalMiners;
+    Memory.stats['rooms.' + spawn.room.name + '.creeps.carriers'] = totalCarriers;
     Memory.stats['rooms.' + spawn.room.name + '.creeps.harvesters'] = totalHarvesters;
-    Memory.stats['rooms.' + spawn.room.name + '.creeps.remoteHarvesters'] = totalLongDistanceHarversters;
+    Memory.stats['rooms.' + spawn.room.name + '.creeps.rHarvesters'] = totalrHarversters;
     Memory.stats['rooms.' + spawn.room.name + '.creeps.upgraders'] = totalUpgraders;
     Memory.stats['rooms.' + spawn.room.name + '.creeps.builders'] = totalBuilders;
     Memory.stats['rooms.' + spawn.room.name + '.creeps.repairers'] = totalRepairers;
     Memory.stats['rooms.' + spawn.room.name + '.creeps.wallRepairers'] = totalWallRepairers;
     Memory.stats['rooms.' + spawn.room.name + '.creeps.collectors'] = totalCollectors;
     Memory.stats['rooms.' + spawn.room.name + '.creeps.soldiers'] = totalSoldiers;
-    Memory.stats['rooms.' + spawn.room.name + '.creeps.remoteBuilders'] = totalRemoteBuilders;
-    Memory.stats['rooms.' + spawn.room.name + '.creeps.remoteDismantlers'] = totalRemoteDismantlers;
-    
+    Memory.stats['rooms.' + spawn.room.name + '.creeps.rBuilders'] = totalrBuilders;
+    Memory.stats['rooms.' + spawn.room.name + '.creeps.rDismantlers'] = totalrDismantlers;
 
-    if (totalHarvesters < spawn.memory.MIN_HARVESTERS) {
+
+    if ((!totalMiners || !totalCarriers) && totalHarvesters < 2) {
 
         let name = spawn.createBalancedCreep(spawn.room.name, spawn.room.energyCapacityAvailable, 'harvester');
         if (!(name < 0)) console.log(`new harvester(${totalHarvesters + 1}) -> ${name}`);
         if ((name === ERR_NOT_ENOUGH_ENERGY && !spawn.memory.MIN_HARVESTERS) || spawn.room.find(FIND_MY_CREEPS).length < 1) {
             name = spawn.createBalancedCreep(spawn.room.name, spawn.room.energyAvailable, 'harvester');
             if (!(name < 0)) console.log(`new basicHarvester(${totalHarvesters + 1}) -> ${name}`);
+        }
+        // Claim room
+    } else if ((totalMiners < spawn.memory.MIN_MINERS) && (totalMiners <= totalCarriers)) {
+        let sources = spawn.room.find(FIND_SOURCES);
+        for (let source of sources) {
+            if (!_.some(creepsSpawnedHere, (c => (c.memory.role === 'miner') && (c.memory.sourceId === source.id)))) {
+                if (source.pos.findInRange(FIND_STRUCTURES, 1, {filter: (s) => s.structureType === STRUCTURE_CONTAINER}).length > 0) {
+                    let name = spawn.createMiner(spawn.room.name, spawn.room.energyCapacityAvailable, source.id);
+                    if (!(name < 0)) console.log(`new miner(${totalMiners + 1}) -> ${name}`);
+                    break;
+                }
+            }
+        }
+        // Claim room
+    } else if (totalCarriers < spawn.memory.MIN_CARRIERS) {
+        let name = spawn.createCarrier(spawn.room.name, 1100, 'carrier');
+        if (!(name < 0)) console.log(`new carrier(${totalCarriers + 1}) -> ${name}`);
+        if ((name === ERR_NOT_ENOUGH_ENERGY && (totalCarriers < 1)) || spawn.room.energyCapacityAvailable < 1100) {
+            name = spawn.createCarrier(spawn.room.name, 550, 'carrier');
+            if (!(name < 0)) console.log(`new basic carrier(${totalCarriers + 1}) -> ${name}`);
         }
         // Claim room
     } else if (spawn.memory.claimRoom !== undefined) {
@@ -169,18 +212,18 @@ function spawnCreeps(creepsSpawnedHere, spawn) {
 
     } else if (totalSoldiers < spawn.memory.MIN_SOLDIERS) {
 
-        let name = spawn.createSoldier(spawn.room.name, spawn.room.energyAvailable, spawn.memory.SOLDIER_DEPLOY_LOCATION);
+        let name = spawn.createSoldier(spawn.room.name, 300, spawn.memory.SOLDIER_DEPLOY_LOCATION);
         if (!(name < 0)) console.log(`new soldier(${totalSoldiers + 1}) -> ${name}`);
 
-    } else if (totalRemoteDismantlers < spawn.memory.MIN_REMOTE_DISMANTLERS) {
+    } else if (totalrDismantlers < spawn.memory.MIN_REMOTE_DISMANTLERS) {
 
-        let name = spawn.createRemoteDismantlerCreep(spawn.room.name, spawn.room.energyCapacityAvailable, 4, spawn.memory.REMOTE_DISMANTLER_TARGET);
-        if (!(name < 0)) console.log(`new remote dismantler(${ + 1}) -> ${name}`);
+        let name = spawn.createrDismantlerCreep(spawn.room.name, spawn.room.energyCapacityAvailable, 4, spawn.memory.REMOTE_DISMANTLER_TARGET);
+        if (!(name < 0)) console.log(`new remote dismantler(${ +1}) -> ${name}`);
 
-    } else if (totalLongDistanceHarversters < spawn.memory.MIN_REMOTE_HARVESTERS) {
+    } else if (totalrHarversters < spawn.memory.MIN_REMOTE_HARVESTERS) {
 
-        let name = spawn.createremoteHarvesterCreep(spawn.room.name, spawn.room.energyCapacityAvailable, 4, spawn.memory.REMOTE_HARVESTER_TARGET);
-        if (!(name < 0)) console.log(`new longDistance(${totalLongDistanceHarversters + 1}) -> ${name}`);
+        let name = spawn.createrHarvesterCreep(spawn.room.name, spawn.room.energyCapacityAvailable, 3, spawn.memory.REMOTE_HARVESTER_TARGET);
+        if (!(name < 0)) console.log(`new remote(${totalrHarversters + 1}) -> ${name}`);
 
     } else if (totalUpgraders < spawn.memory.MIN_UPGRADERS) {
 
@@ -204,12 +247,12 @@ function spawnCreeps(creepsSpawnedHere, spawn) {
 
     } else if (totalCollectors < spawn.memory.MIN_COLLECTORS) {
 
-        let name = spawn.createBalancedCreep(spawn.room.name, spawn.room.energyCapacityAvailable, 'collector');
+        let name = spawn.createCarrier(spawn.room.name, 1100, 'collector');
         if (!(name < 0)) console.log(`new collector(${totalCollectors + 1}) -> ${name}`);
 
-    } else if (totalRemoteBuilders < spawn.memory.MIN_REMOTE_BUILDERS) {
-        let name = spawn.createRemoteBuilderCreep(spawn.room.name, spawn.room.energyCapacityAvailable, 7, 'W52S45');
-        if (!(name < 0)) console.log(`new remote builder(${totalRemoteBuilders + 1}) -> ${name}`);
+    } else if (totalrBuilders < spawn.memory.MIN_REMOTE_BUILDERS) {
+        let name = spawn.createrBuilderCreep(spawn.room.name, spawn.room.energyCapacityAvailable, 3, spawn.memory.REMOTE_BUILDER_TARGET);
+        if (!(name < 0)) console.log(`new remote builder(${totalrBuilders + 1}) -> ${name}`);
     }
 
     return Game.cpu.getUsed() - cpuTime;
@@ -217,8 +260,10 @@ function spawnCreeps(creepsSpawnedHere, spawn) {
 
 function dispatchRoles(creepsSpawnedHere, spawn) {
 
+    Memory.temp.cpu.rooms[spawn.room.name + '.mining'] = 0;
+    Memory.temp.cpu.rooms[spawn.room.name + '.carring'] = 0;
     Memory.temp.cpu.rooms[spawn.room.name + '.harvesting'] = 0;
-    // Memory.temp.cpu.rooms[spawn.room.name + '.remoteHarvesting'] = 0;
+    // Memory.temp.cpu.rooms[spawn.room.name + '.rHarvesting'] = 0;
     Memory.temp.cpu.rooms[spawn.room.name + '.upgrading'] = 0;
     Memory.temp.cpu.rooms[spawn.room.name + '.building'] = 0;
     Memory.temp.cpu.rooms[spawn.room.name + '.repairing'] = 0;
@@ -226,26 +271,39 @@ function dispatchRoles(creepsSpawnedHere, spawn) {
     Memory.temp.cpu.rooms[spawn.room.name + '.claiming'] = 0;
     Memory.temp.cpu.rooms[spawn.room.name + '.collecting'] = 0;
     Memory.temp.cpu.rooms[spawn.room.name + '.patroling'] = 0;
-    // Memory.temp.cpu.rooms[spawn.room.name + '.remoteBuilding'] = 0;
+    // Memory.temp.cpu.rooms[spawn.room.name + '.rBuilding'] = 0;
 
     creepsSpawnedHere.forEach((creep) => {
         // noinspection JSUnfilteredForInLoop
 
+        if(creep.ticksToLive < 30) creep.say('⌀');
+
+
         const cpuTime = Game.cpu.getUsed();
         switch (creep.memory.role) {
+            case 'miner': {
+                Miner.run(creep, spawn);
+                Memory.temp.cpu.rooms[spawn.room.name + '.mining'] = (Game.cpu.getUsed() - cpuTime);
+                break;
+            }
+            case 'carrier': {
+                Carrier.run(creep, spawn);
+                Memory.temp.cpu.rooms[spawn.room.name + '.carring'] = (Game.cpu.getUsed() - cpuTime);
+                break;
+            }
             case 'harvester': {
                 Harvester.run(creep, spawn);
                 Memory.temp.cpu.rooms[spawn.room.name + '.harvesting'] = (Game.cpu.getUsed() - cpuTime);
                 break;
             }
-            case 'remoteHarvester': {
-                remoteHarvester.run(creep);
+            case 'rHarvester': {
+                rHarvester.run(creep);
                 Memory.temp.cpu.rooms[spawn.room.name + '.harvesting'] = (Game.cpu.getUsed() - cpuTime);
                 break;
             }
-            case 'remoteDismantler': {
-                RemoteDismantler.run(creep);
-               // Memory.temp.cpu.rooms[spawn.room.name + '.harvesting'] = (Game.cpu.getUsed() - cpuTime);
+            case 'rDismantler': {
+                rDismantler.run(creep);
+                // Memory.temp.cpu.rooms[spawn.room.name + '.harvesting'] = (Game.cpu.getUsed() - cpuTime);
                 break;
             }
             case 'upgrader': {
@@ -256,6 +314,8 @@ function dispatchRoles(creepsSpawnedHere, spawn) {
             case 'builder': {
                 if (Builder.run(creep)) {
                     Memory.temp.cpu.rooms[spawn.room.name + '.building'] = (Game.cpu.getUsed() - cpuTime);
+                } else if (Repairer.run(creep)) {
+                    Memory.temp.cpu.rooms[spawn.room.name + '.repairing'] = (Game.cpu.getUsed() - cpuTime);
                 } else {
                     Ugrader.run(creep);
                     Memory.temp.cpu.rooms[spawn.room.name + '.upgrading'] = (Game.cpu.getUsed() - cpuTime);
@@ -263,12 +323,13 @@ function dispatchRoles(creepsSpawnedHere, spawn) {
                 break;
             }
             case 'repairer': {
-                if (Repairer.run(creep)) {
+                if (Builder.run(creep)) {
+                    Memory.temp.cpu.rooms[spawn.room.name + '.building'] = (Game.cpu.getUsed() - cpuTime);
+                } else if (Repairer.run(creep)) {
                     Memory.temp.cpu.rooms[spawn.room.name + '.repairing'] = (Game.cpu.getUsed() - cpuTime);
                 } else {
                     Ugrader.run(creep);
                     Memory.temp.cpu.rooms[spawn.room.name + '.upgrading'] = (Game.cpu.getUsed() - cpuTime);
-
                 }
                 break;
             }
@@ -286,8 +347,8 @@ function dispatchRoles(creepsSpawnedHere, spawn) {
                 if (Collector.run(creep, spawn)) {
                     Memory.temp.cpu.rooms[spawn.room.name + '.collecting'] = (Game.cpu.getUsed() - cpuTime);
                 } else {
-                    Harvester.run(creep, spawn);
-                    Memory.temp.cpu.rooms[spawn.room.name + '.harvesting'] = (Game.cpu.getUsed() - cpuTime);
+                    Carrier.run(creep);
+                    Memory.temp.cpu.rooms[spawn.room.name + '.carring'] = (Game.cpu.getUsed() - cpuTime);
                 }
                 break;
             }
@@ -296,8 +357,8 @@ function dispatchRoles(creepsSpawnedHere, spawn) {
                 Memory.temp.cpu.rooms[spawn.room.name + '.patroling'] = Game.cpu.getUsed() - cpuTime;
                 break;
             }
-            case 'remoteBuilder': {
-                if (RemoteBuilder.run(creep, spawn)) {
+            case 'rBuilder': {
+                if (rBuilder.run(creep, spawn)) {
                     Memory.temp.cpu.rooms[spawn.room.name + '.building'] = Game.cpu.getUsed() - cpuTime;
                 } else {
                     Ugrader.run(creep);

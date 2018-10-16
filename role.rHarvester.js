@@ -1,4 +1,6 @@
+const goToDie = require("./utils").goToDie;
 const PATH_STYLE = {
+    reusePath: 3,
   visualizePathStyle: {
     stroke: 'pink',
     lineStyle: 'solid',
@@ -10,7 +12,10 @@ const PATH_STYLE = {
 module.exports = {
 
   run: (creep) => {
-    if (creep.memory.working === true && creep.carry.energy === 0) {
+
+      if (goToDie(creep)) return true;
+
+      if (creep.memory.working === true && creep.carry.energy === 0) {
       creep.memory.working = false;
       creep.memory.iterations++;
     } else {
@@ -22,18 +27,9 @@ module.exports = {
     // creep move to unload
     if (creep.memory.working === true) {
       // creep is in home room
-        let structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-            filter: (s) =>
-                (s.structureType === STRUCTURE_SPAWN
-                    || s.structureType === STRUCTURE_EXTENSION
-                    || s.structureType === STRUCTURE_TOWER)
-                && s.energy < s.energyCapacity
-        });
-        if (!structure) {
-            structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                filter: (s) => s.structureType === STRUCTURE_STORAGE
+        let structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                filter: (s) => s.structureType === STRUCTURE_CONTAINER
             });
-        }
         if (structure) {
             if (creep.transfer(structure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(structure, PATH_STYLE);

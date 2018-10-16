@@ -1,9 +1,13 @@
 const Builder = require('./role.builder');
+const goToDie = require("./utils").goToDie;
 
 module.exports = {
 
   run: (creep) => {
-    if (creep.memory.working === true && creep.carry.energy === 0) {
+
+      if (goToDie(creep)) return true;
+
+      if (creep.memory.working === true && creep.carry.energy === 0) {
       creep.memory.working = false;
     } else {
       if (creep.memory.working === false && creep.carry.energy === creep.carryCapacity) {

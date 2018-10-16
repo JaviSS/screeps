@@ -16,17 +16,19 @@ module.exports = {
 
         if (goToDie(creep)) return true;
 
+
         if (creep.memory.working === true && creep.carry.energy === 0) {
             creep.memory.working = false;
         } else {
             if (creep.memory.working === false && creep.carry.energy === creep.carryCapacity) {
+                delete creep.memory.destination;
                 creep.memory.working = true;
             }
         }
 
         if (creep.memory.working === true) {
             let structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                filter: (s) => (s.structureType === STRUCTURE_TOWER) && (s.energy < s.energyCapacity)
+                filter: (s) => (s.structureType === STRUCTURE_TOWER) && (s.energy < (s.energyCapacity * 0.9))
             });
             if (!structure) {
                 structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
@@ -50,21 +52,22 @@ module.exports = {
                 creep.moveTo(spawn, MOVE_OPTS);
             }
         } else {
-            let source = creep.room.find(FIND_STRUCTURES, {
-                filter: (s) => (s.structureType === STRUCTURE_CONTAINER) && (s.store[RESOURCE_ENERGY] > 500)
-            })[0];
+            if (!creep.memory.destination) {
 
-            if (source) {
-                if (creep.withdraw(source, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(source, MOVE_OPTS);
-                }
-            } else {
-                source = creep.pos.findClosestByPath(FIND_SOURCES, {
-                    filter: (s) => s.energy > 0
+                let sources = creep.room.find(FIND_STRUCTURES, {
+                    filter: (s) => (s.structureType === STRUCTURE_CONTAINER) && (s.store[RESOURCE_ENERGY] > 450)
                 });
-                if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(source, MOVE_OPTS);
-                }
+
+
+                if (sources.length > 0) creep.memory.destination = sources[Math.floor(Math.random() * (sources.length))].id;
+            }
+
+            const status = creep.withdraw(Game.getObjectById(creep.memory.destination), RESOURCE_ENERGY);
+            if (status === ERR_NOT_IN_RANGE) {
+                creep.moveTo(Game.getObjectById(creep.memory.destination), MOVE_OPTS);
+            } else if (status === ERR_NOT_ENOUGH_RESOURCES) {
+                delete creep.memory.destination;
+
             }
         }
     }

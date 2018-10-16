@@ -1,4 +1,6 @@
+const goToDie = require("./utils").goToDie;
 const PATH_STYLE = {
+    reusePath: 3,
     visualizePathStyle: {
         fill: 'transparent',
         stroke: 'cyan',
@@ -11,8 +13,12 @@ const PATH_STYLE = {
 module.exports = {
 
     run: (creep) => {
+
+        if (goToDie(creep)) return true;
+
         if (creep.memory.working === true && creep.carry.energy === 0) {
             creep.memory.working = false;
+            delete creep.memory['repairing'];
         } else {
             if (creep.memory.working === false && creep.carry.energy === creep.carryCapacity) {
                 creep.memory.working = true;
@@ -20,11 +26,18 @@ module.exports = {
         }
 
         if (creep.memory.working === true) {
-            let structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: (s) => s.hits < (s.hitsMax*0.9) && s.structureType !== STRUCTURE_WALL
-            });
+
+            let structure = Game.getObjectById(creep.memory['repairing']);
+
+            if (!structure) {
+                structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                    filter: (s) => s.hits < (s.hitsMax * 0.85) && s.structureType !== STRUCTURE_WALL
+                });
+            }
 
             if (structure) {
+                creep.memory['repairing'] = structure.id;
+                if(structure.hits === structure.hitsMax) delete creep.memory['repairing'];
                 let repairStatus = creep.repair(structure);
                 if (repairStatus === ERR_NOT_IN_RANGE || repairStatus === ERR_TIRED) {
                     creep.moveTo(structure, PATH_STYLE);
@@ -33,32 +46,13 @@ module.exports = {
                 return false;
             }
         } else {
-            let source = creep.pos.findClosestByPath(FIND_SOURCES, {
-                filter: (s) => s.energy > 0
+            let source = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                filter: (s) => (s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_CONTAINER) && (s.store[RESOURCE_ENERGY] > 0)
             });
-            if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(source, PATH_STYLE);
-            } else {
 
-                // try to harvest from energy deposit
-                let source = creep.pos.findClosestByPath(FIND_SOURCES, {
-                    filter: (s) => s.energy > 0
-                });
-
-                let status = creep.harvest(source);
-                if (status === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(source, PATH_STYLE)
-                    // try to transfer from storage
-                } else if (status < 0) {
-                    source = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                        filter: (s) => s.structureType === STRUCTURE_STORAGE
-                    });
-
-                    status = creep.withdraw(source, RESOURCE_ENERGY);
-                    if (status === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(source, PATH_STYLE)
-                    }
-                }
+            status = creep.withdraw(source, RESOURCE_ENERGY);
+            if (status === ERR_NOT_IN_RANGE) {
+                creep.moveTo(source, PATH_STYLE)
             }
         }
         return true;

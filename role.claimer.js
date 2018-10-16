@@ -1,5 +1,6 @@
 const PATH_STYLE = {
-  visualizePathStyle: {
+    reusePath: 3,
+    visualizePathStyle: {
     stroke: 'red',
     lineStyle: 'solid',
     strokeWidth: .1,
@@ -13,7 +14,7 @@ module.exports = {
     // creep in destiny room
     if (creep.room.name === creep.memory.target) {
         // let status = creep.claimController(creep.room.controller);
-        let status = creep.reserveController(creep.room.controller);
+        let status = creep.claimController(creep.room.controller);
 
         // console.log(status)
       if (status < 0) {

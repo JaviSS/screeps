@@ -1,13 +1,18 @@
+const goToDie = require("./utils").goToDie;
 const PATH_STYLE = {
+    reusePath: 3,
     visualizePathStyle: {
-        stroke: 'green',
+        stroke: '#33ff99',
         strokeWidth: .15,
-        opacity: .2
+        opacity: .3,
+        lineStyle: 'solid',
     }
 };
 
 module.exports = {
     run: (creep, spawn) => {
+
+        if (goToDie(creep)) return true;
 
         const creepContents = _.sum(creep.carry, (c) => {
             return c;
@@ -19,6 +24,11 @@ module.exports = {
             if (creep.memory.working === false && creepContents === creep.carryCapacity) {
                 creep.memory.working = true;
             }
+        }
+
+        if (creep.room.name !== creep.memory.home) {
+            let posInAnotherRoom = new RoomPosition(20, 10, creep.memory.home);
+            creep.moveTo(posInAnotherRoom, PATH_STYLE);
         }
 
         if (creep.memory.working === true) {
@@ -38,7 +48,7 @@ module.exports = {
             }
 
             if (structure) {
-             
+
                 if (creep.transfer(structure, _.findKey(creep.carry)) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(structure, PATH_STYLE);
                 }
@@ -47,17 +57,18 @@ module.exports = {
             }
         } else {
             let source = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
-            
+
             if (source) {
                 if (creep.pickup(source) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(source, PATH_STYLE);
                 }
             } else {
                 source = creep.pos.findClosestByPath(FIND_TOMBSTONES);
-             
-        
-                if (source && creep.withdraw(source, _.findKey(source.store)) === ERR_NOT_IN_RANGE) {
+                if (source) {
+                    const withdraw = _.findKey(source.store);
+                    if (source[withdraw] && creep.withdraw(source, withdraw)) {
                         creep.moveTo(source, PATH_STYLE);
+                    }
                 } else {
                     return false;
                 }
