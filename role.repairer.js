@@ -31,7 +31,7 @@ module.exports = {
 
             if (!structure) {
                 structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                    filter: (s) => s.hits < (s.hitsMax * 0.85) && s.structureType !== STRUCTURE_WALL
+                    filter: (s) => s.hits < (s.hitsMax * 0.85) && s.structureType !== STRUCTURE_WALL && s.structureType !== STRUCTURE_RAMPART
                 });
             }
 
@@ -47,7 +47,7 @@ module.exports = {
             }
         } else {
             let source = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: (s) => (s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_CONTAINER) && (s.store[RESOURCE_ENERGY] > 0)
+                filter: (s) => (s.structureType === STRUCTURE_STORAGE && s.store[RESOURCE_ENERGY] > 10000) || (s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 300)
             });
 
             status = creep.withdraw(source, RESOURCE_ENERGY);

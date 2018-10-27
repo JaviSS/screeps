@@ -42,7 +42,7 @@ function findAndAttack(creep) {
         let username = hostiles[0].owner.username;
         Game.notify(`Soldier spotted an enemy creep (${username})`);
         let status = creep.rangedAttack(hostiles[0]);
-        if (!(status < 0)) status = creep.attack(hostiles[0]);
+        if ((status < 0)) status = creep.attack(hostiles[0]);
         if (status === ERR_NOT_IN_RANGE) {
             creep.moveTo(hostiles[0], PATH_STYLE_ATACK);
         }

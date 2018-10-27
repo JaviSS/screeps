@@ -31,14 +31,14 @@ module.exports = {
                     return false;
                 }
             } else {
-                let exit = creep.room.findExitTo(creep.memory.target);
-                creep.moveTo(creep.pos.findClosestByRange(exit), PATH_STYLE);
+      let posInAnotherRoom = new RoomPosition(20, 10, creep.memory.target);
+                creep.moveTo(posInAnotherRoom, PATH_STYLE);
             }
         } else {
 
             // try to harvest from energy deposit
-            let source = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                filter: (s) => (s.structureType === STRUCTURE_STORAGE) && (s.store[RESOURCE_ENERGY] > 0)
+            let source = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                filter: (s) => (s.structureType === STRUCTURE_STORAGE && s.store[RESOURCE_ENERGY] > 10000) || (s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 300)
             });
 
             status = creep.withdraw(source, RESOURCE_ENERGY);

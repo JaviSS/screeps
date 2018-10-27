@@ -39,7 +39,7 @@ module.exports = {
         } else {
             // try to harvest from energy deposit
             let source = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: (s) => (s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_CONTAINER) && (s.store[RESOURCE_ENERGY] > 600)
+                filter: (s) => (s.structureType === STRUCTURE_STORAGE && s.store[RESOURCE_ENERGY] > 10000)
             });
 
             status = creep.withdraw(source, RESOURCE_ENERGY);

@@ -14,7 +14,10 @@ module.exports = {
     goToDie(creep) {
         if (creep.ticksToLive < 20) {
             creep.say('⌀');
-            creep.moveTo(creep.room.find(FIND_STRUCTURES, {filter: (s) => s.structureType === STRUCTURE_STORAGE})[0], DIE_OPTS);
+            let storage = creep.room.find(FIND_STRUCTURES, {filter: (s) => s.structureType === STRUCTURE_STORAGE})[0];
+            if (creep.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(storage, DIE_OPTS);
+            }
             return true;
         }
         return false;

@@ -66,12 +66,12 @@ module.exports = {
                 source = creep.pos.findClosestByPath(FIND_TOMBSTONES);
                 if (source) {
                     const withdraw = _.findKey(source.store);
-                    if (source[withdraw] && creep.withdraw(source, withdraw)) {
-                        creep.moveTo(source, PATH_STYLE);
-                    }
-                } else {
+                        if (creep.withdraw(source, withdraw) === ERR_NOT_IN_RANGE)
+                            creep.moveTo(source, PATH_STYLE);
+                       } else {
                     return false;
                 }
+                return false;
             }
         }
         return true;

@@ -51,7 +51,7 @@ module.exports = {
             }
         } else {
             let source = creep.room.find(FIND_STRUCTURES, {
-                filter: (s) => (s.structureType === STRUCTURE_CONTAINER) && (s.store[RESOURCE_ENERGY] > 500)
+                filter: (s) => (s.structureType === STRUCTURE_CONTAINER) && (s.store[RESOURCE_ENERGY] > 0)
             })[0];
 
             if (source) {

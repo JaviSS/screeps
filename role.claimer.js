@@ -16,13 +16,13 @@ module.exports = {
         // let status = creep.claimController(creep.room.controller);
         let status = creep.claimController(creep.room.controller);
 
-        // console.log(status)
+       // console.log(status)
       if (status < 0) {
         creep.moveTo(creep.room.controller, PATH_STYLE);
       }
       // creep not it destiny room
     } else {
-      creep.moveTo(creep.pos.findClosestByRange(creep.room.findExitTo(creep.memory.target)), PATH_STYLE);
-    }
+ let posInAnotherRoom = new RoomPosition(20, 10, creep.memory.target);
+                creep.moveTo(posInAnotherRoom, PATH_STYLE);    }
   }
 };
